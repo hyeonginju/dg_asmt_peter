@@ -2,6 +2,7 @@ import 'package:dg_asmt_peter/theme/app_colors.dart';
 import 'package:dg_asmt_peter/theme/app_icons.dart';
 import 'package:dg_asmt_peter/widgets/custom_search_bar.dart';
 import 'package:dg_asmt_peter/widgets/header_text.dart';
+import 'package:dg_asmt_peter/widgets/multi_select_buttons.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -73,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'Highly packable, weatherproof outdoor equipment',
               ),
               CustomSearchBar(),
+              MultiSelectButtons(items: items),
             ],
           ),
         ),
