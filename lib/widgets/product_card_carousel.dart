@@ -23,7 +23,14 @@ class Product with _$Product {
 
 class ProductCardCarousel extends StatefulWidget {
   final List<String> items;
-  const ProductCardCarousel({super.key, required this.items});
+  final String? selectedItem; // 선택된 아이템
+  final Function(String)? onItemChange;
+  const ProductCardCarousel({
+    super.key,
+    required this.items,
+    this.selectedItem,
+    this.onItemChange,
+  });
 
   @override
   _ProductCardCarouselState createState() => _ProductCardCarouselState();
@@ -32,14 +39,15 @@ class ProductCardCarousel extends StatefulWidget {
 class _ProductCardCarouselState extends State<ProductCardCarousel> {
   late PageController _pageController;
   int _currentIndex = 0;
-  bool _isLoading = true; // 로딩 상태 추가
+  bool _isLoading = true;
+  String? _displayedItem;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    _displayedItem = widget.selectedItem ?? widget.items.first;
 
-    // 2초 지연 후 로딩 완료
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -53,6 +61,18 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _startLoading(String item) {
+    setState(() => _isLoading = true);
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {
+          _displayedItem = item;
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   void _previousCard() {
@@ -70,6 +90,16 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ProductCardCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedItem != null &&
+        widget.selectedItem != oldWidget.selectedItem &&
+        widget.selectedItem != _displayedItem) {
+      _startLoading(widget.selectedItem!);
     }
   }
 
@@ -109,7 +139,7 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
               },
               itemCount: widget.items.length,
               itemBuilder: (context, index) {
-                final item = widget.items[index];
+                final item = _displayedItem ?? widget.items[_currentIndex];
                 final product = productData[item] ?? _getDefaultProduct(item);
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2),

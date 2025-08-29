@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 
 class MultiSelectButtons extends StatefulWidget {
   final List<String> items;
-  const MultiSelectButtons({super.key, required this.items});
+  final Function(String) onItemSelected;
+  const MultiSelectButtons({
+    super.key,
+    required this.items,
+    required this.onItemSelected,
+  });
 
   @override
   _MultiSelectButtonsState createState() => _MultiSelectButtonsState();
@@ -29,11 +34,8 @@ class _MultiSelectButtonsState extends State<MultiSelectButtons> {
   void _onItemPressed(int index) {
     setState(() {
       selectedItems[index] = !selectedItems[index];
-
-      if (selectedItems.every((selected) => selected)) {
-        isAllSelected = true;
-      } else {
-        isAllSelected = false;
+      if (selectedItems[index]) {
+        widget.onItemSelected(widget.items[index]);
       }
     });
   }

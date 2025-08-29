@@ -24,6 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
     'Water bottles',
     'Flashlights',
   ];
+
+  String? _selectedItem;
+
+  void _onItemSelected(String item) {
+    setState(() {
+      _selectedItem = item;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,8 +85,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'Highly packable, weatherproof outdoor equipment',
               ),
               CustomSearchBar(),
-              MultiSelectButtons(items: items),
-              ProductCardCarousel(items: items),
+              MultiSelectButtons(items: items, onItemSelected: _onItemSelected),
+              ProductCardCarousel(
+                items: items,
+                selectedItem: _selectedItem,
+                onItemChange: (item) {
+                  _selectedItem = item;
+                },
+              ),
               FiltersCard(),
             ],
           ),
