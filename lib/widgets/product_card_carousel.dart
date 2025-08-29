@@ -23,7 +23,7 @@ class Product with _$Product {
 
 class ProductCardCarousel extends StatefulWidget {
   final List<String> items;
-  final String? selectedItem; // 선택된 아이템
+  final String? selectedItem;
   final Function(String)? onItemChange;
   const ProductCardCarousel({
     super.key,
@@ -40,13 +40,11 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
   late PageController _pageController;
   int _currentIndex = 0;
   bool _isLoading = true;
-  String? _displayedItem;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    _displayedItem = widget.selectedItem ?? widget.items.first;
 
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
@@ -64,14 +62,24 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
   }
 
   void _startLoading(String item) {
+    final newIndex = widget.items.indexOf(item);
+    if (newIndex == -1) return;
+
     setState(() => _isLoading = true);
+
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          _displayedItem = item;
-          _isLoading = false;
-        });
-      }
+      if (!mounted) return;
+
+      setState(() {
+        _currentIndex = newIndex;
+        _isLoading = false;
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_pageController.hasClients) return;
+        _pageController.jumpToPage(newIndex);
+        widget.onItemChange?.call(item);
+      });
     });
   }
 
@@ -98,7 +106,7 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
     super.didUpdateWidget(oldWidget);
     if (widget.selectedItem != null &&
         widget.selectedItem != oldWidget.selectedItem &&
-        widget.selectedItem != _displayedItem) {
+        widget.selectedItem != widget.items[_currentIndex]) {
       _startLoading(widget.selectedItem!);
     }
   }
@@ -111,7 +119,7 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
       return LoadingCard(
         width: screenWidth - 30,
         height: 250,
-        color: Colors.grey.shade300, // same as your skeleton color
+        color: Colors.grey.shade300,
       );
     }
 
@@ -139,7 +147,7 @@ class _ProductCardCarouselState extends State<ProductCardCarousel> {
               },
               itemCount: widget.items.length,
               itemBuilder: (context, index) {
-                final item = _displayedItem ?? widget.items[_currentIndex];
+                final item = widget.items[index];
                 final product = productData[item] ?? _getDefaultProduct(item);
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -310,9 +318,7 @@ class LoadingCard extends StatelessWidget {
         height: 30,
         child: CircularProgressIndicator(
           strokeWidth: 3,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            Colors.white,
-          ), // spinner color
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         ),
       ),
     );

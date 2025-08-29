@@ -1,4 +1,5 @@
 import 'package:dg_asmt_peter/screens/home_screen.dart';
+import 'package:dg_asmt_peter/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,9 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: AppColors.mainColorStart,
       title: 'Flutter Demo',
       theme: ThemeData.light(),
-
       home: const HomeScreen(),
     );
   }

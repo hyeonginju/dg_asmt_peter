@@ -1,3 +1,4 @@
+import 'package:dg_asmt_peter/mock/items.dart';
 import 'package:dg_asmt_peter/theme/app_colors.dart';
 import 'package:dg_asmt_peter/theme/app_icons.dart';
 import 'package:dg_asmt_peter/widgets/custom_search_bar.dart';
@@ -15,16 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<String> items = [
-    'Tents',
-    'Sleeping bags',
-    'Backpacks',
-    'Hiking boots',
-    'Camping gear',
-    'Water bottles',
-    'Flashlights',
-  ];
-
   String? _selectedItem;
 
   void _onItemSelected(String item) {
@@ -36,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.mainColorStart,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(78),
         child: Container(
